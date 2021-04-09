@@ -1,6 +1,6 @@
 name: extract_pr_contents
 
-on: [pull_request]
+on: pull_request
 
 jobs:
   build-android:
