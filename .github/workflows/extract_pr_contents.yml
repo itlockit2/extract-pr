@@ -1,0 +1,29 @@
+name: extract_pr_contents
+
+on: [pull_request]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+      - name: Checkout any code changes
+        id: checkChange
+        run: |
+          currentDate=$(date  +%w)
+          if [ ${currentDate} -eq 1 ] ; then
+              git --no-pager log --since=3.day >> gitLogResult.txt
+          else
+              git --no-pager log --since=1.day >> gitLogResult.txt
+          fi
+          filesize=$(stat -c %s "gitLogResult.txt")
+          if [ ${filesize} -eq 0 ] ; then
+              echo ::set-output name=isChangeCode::0
+          else
+              echo ::set-output name=isChangeCode::1
+          fi
+          iconv -c -f euc-kr -t utf-8 gitLogResult.txt > gitLogResult_utf8.txt
+          cat gitLogResult_utf8.txt
